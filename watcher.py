@@ -29,13 +29,14 @@ while 1:
                 # logging.info('Sending file... %s' % file_path)
                 print("Destination", config.upload_url)
                 with open(file_path,'rb') as fp:
-                    file_dict = {'upload_file': (f, fp, 'multipart/form-data')}
+                    file_dict = {'file': (f, fp, 'multipart/form-data')}
                     response = requests.post(config.upload_url, files=file_dict, headers=headers)
                     fp.close()
                     # logging.info('STATUS %s' % response.status_code)
                     print('STATUS %s' % response.status_code)
-                    # print('RESULT %s' % response.text)
-                    if response.status_code == 200 and response.json()['faces'] != []:
+                    print('RESULT %s' % response.json()['message'])
+
+                    if response.status_code == 200 and response.json()['message'] == 'ok':
                         print('Removing file... %s' % file_path)
                         os.remove(file_path)     
                         del headers
