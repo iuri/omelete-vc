@@ -3,6 +3,8 @@ import os
 import cv2
 import sys
 import random, string
+import socket
+import datetime
 
 faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
 # eyeCascade = cv2.CascadeClassifier('haarcascade_eye.xml')
@@ -43,7 +45,10 @@ while True:
             if len(crop_img) != 0:
                 letters = string.ascii_lowercase
                 result_str = ''.join(random.choice(letters) for i in range(12))
-                status = cv2.imwrite(os.path.join('images',result_str+".jpg"), crop_img)
+                file_path = os.path.join(img_folder
+                    ,str(datetime.datetime.now()) + "_" + str(socket.gethostname()) + "_" + result_str +".jpg")
+                print('file_path', file_path)    
+                status = cv2.imwrite(file_path, crop_img)
                 print("[INFO] Image written to filesystem: ", status)
 
 
