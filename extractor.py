@@ -18,6 +18,9 @@ APPENGINE_URL = os.environ.get("APP_ENGINE_URL")
 
 
 INPUT_FOLDER = './images'
+if not os.path.exists(INPUT_FOLDER):
+    os.umask(0)
+    os.makedirs(INPUT_FOLDER, mode=0o777, exist_ok=False)
 os.chdir(".")
 
 TMP_FOLDER= "tmp"

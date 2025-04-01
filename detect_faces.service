@@ -6,10 +6,10 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-# User=pi
-# Group=pi
-WorkingDirectory=/home/pi/opencv
-ExecStart=/usr/bin/python /home/pi/opencv/detectFacesEyes.py
+User=iuri
+Group=iuri
+WorkingDirectory=/home/iuri/omelete-vc
+ExecStart=/usr/bin/python3 /home/iuri/omelete-vc/detectFacesEyes.py
 StandardInput=tty-force
 StandardOutput=append:/var/log/detectfaces.log
 StandardError=append:/var/log/detectfaces_error.log
