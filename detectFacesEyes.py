@@ -32,7 +32,10 @@ if not os.path.exists(IMG_FOLDER):
 def detect_faces():
     while True:
         ret, img = video_capture.read()
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        try:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        except Exception as e:
+            print(f"Error: {str(e)}")
         # bodies = upperbodyCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
         faces = faceCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
 
