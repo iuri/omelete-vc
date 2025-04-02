@@ -37,14 +37,18 @@ def upload(file):
         fp.close()
         # logging.info('STATUS %s' % response.status_code)
         print('STATUS %s' % response.status_code)
-        print('RESULT %s' % response.json()['message'])
+        # print('RESULT %s' % response.json()['message'])
 
         if response.status_code == 200 and response.json()['message'] == 'ok':
             del headers
             del response
             del file_path                        
             time.sleep(2)
-    return 
+            return True
+        elif response.status_code == 502:
+            time.sleep(500)
+        
+    return response.status_code
 
 
 
@@ -79,8 +83,8 @@ if __name__ == '__main__':
         for f in os.listdir(INPUT_FOLDER):
             print('file: ', f)
             if not check_and_delete_json(os.path.join(INPUT_FOLDER,f)):
-                upload(os.path.join(INPUT_FOLDER, f))
-                os.rename(os.path.join(INPUT_FOLDER, f), os.path.join(OUTPUT_FOLDER, f))
+                if upload(os.path.join(INPUT_FOLDER, f)):
+                    os.rename(os.path.join(INPUT_FOLDER, f), os.path.join(OUTPUT_FOLDER, f))
             
                     
                 
