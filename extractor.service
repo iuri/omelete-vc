@@ -6,10 +6,10 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-User=<user>
-Group=<user>
-WorkingDirectory=/home/<user>/opencv
-ExecStart=/usr/bin/python3 /home/<user>/opencv/extrator.py
+User=iuri
+Group=iuri
+WorkingDirectory=/home/iuri/omelete-vc
+ExecStart=/usr/bin/python3 /home/iuri/omelete-vc/extractor.py
 StandardInput=tty-force
 
 StandardOutput=append:/var/log/extractor.log
