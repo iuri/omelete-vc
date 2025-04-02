@@ -23,15 +23,20 @@ if not os.path.exists(INPUT_FOLDER):
     os.makedirs(INPUT_FOLDER, mode=0o777, exist_ok=False)
 os.chdir(".")
 
-TMP_FOLDER= "tmp"
+TMP_FOLDER= "./tmp"
 if not os.path.exists(TMP_FOLDER):
     os.umask(0)
     os.makedirs(TMP_FOLDER, mode=0o777, exist_ok=False)
   
-OUTPUT_FOLDER = 'json'
+OUTPUT_FOLDER = './json'
 if not os.path.exists(OUTPUT_FOLDER):
     os.umask(0)
     os.makedirs(OUTPUT_FOLDER, mode=0o777, exist_ok=False)
+
+PROCESSED_FOLDER = './processed'
+if not os.path.exists(PROCESSED_FOLDER):
+    os.umask(0)
+    os.makedirs(PROCESSED_FOLDER, mode=0o777, exist_ok=False)
 
 
 def delete_file(file_path):
@@ -110,15 +115,19 @@ def get_attributes(input_file_path, crop_img_p="f"):
         # Check if the request was successful
     if response.status_code in [200, 201]:  
         try:
-            response_data = response.json()  # Try to parse JSON response
+            attribs_json = response.json()  # Try to parse JSON response
+            save_json_with_metadata(attribs_json, input_file_path.split("/")[2])
+
             del headers
             del response
             del input_file_path                        
             time.sleep(2)
-            return response_data
+            return 'ok'
         except ValueError:  # If response is not JSON, fallback to raw text
             return {"message": response.text}
     else:
+        print('Status', response.status_code)
+        delete_file(input_file_path)
         return {
             "error": "Luna API request failed",
             "status": response.status_code,
@@ -156,7 +165,9 @@ if __name__ == '__main__':
             file_path = INPUT_FOLDER + '/' + f
             if os.path.splitext(file_path)[1].lower() in ('.jpg', '.jpeg', '.png'):
                 if os.path.isfile(file_path):
-                    attribs = get_attributes(file_path, 'f')
-                    save_json_with_metadata(attribs, file_path.split("/")[2])
-                    delete_file(file_path)
-       
+                    r = get_attributes(file_path, 'f')
+                    if  r == 'ok':
+                        os.rename(file_path, os.path.join(PROCESSED_FOLDER,f))
+                    else:
+                        print('ERROR',r)
+                        
