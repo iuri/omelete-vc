@@ -10,10 +10,12 @@ load_dotenv()
 
 # upperbodyCascade = cv2.CascadeClassifier('haarcascades/haarcascade_upperbody.xml')
 
-# faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
-faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt_tree.xml')
-# eyeCascade = cv2.CascadeClassifier('haarcascade_eye.xml')
-eyeCascade = cv2.CascadeClassifier('haarcascades/haarcascade_eye_tree_eyeglasses.xml')
+faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
+# faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt_tree.xml')
+# faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_eye_tree_eyeglasses.xml')
+
+# eyeCascade = cv2.CascadeClassifier('haarcascades/haarcascade_eye.xml')
+# eyeCascade = cv2.CascadeClassifier('haarcascades/haarcascade_eye_tree_eyeglasses.xml')
 
 CAMERA_URL = os.environ.get("CAMERA_URL")
 
@@ -36,22 +38,21 @@ def detect_faces():
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
             # bodies = upperbodyCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
-            # faces = faceCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
-            faces = faceCascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+            faces = faceCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
+            # faces = faceCascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
             # print("[INFO] Found {0} Faces!".format(len(faces)))
             for (x, y, w, h) in faces:
-                # cv2.rectangle(img, (x, y), (x+w, y+h), (255,0, 0), 2)
+                cv2.rectangle(img, (x, y), (x+w, y+h), (255,0, 0), 2)
                 roi_gray = gray[y:y+h, x:x+w]
                 roi_color = img[y:y+h, x:x+w]
 
                 # eyes = eyeCascade.detectMultiScale(roi_gray)
-
                 # for (ex, ey, ew, eh) in eyes:
-                # cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0), 2)
+                    # cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0), 2)
 
                 # if len(eyes) != 0:
-                #print("EYES", eyes)
+                #   print("EYES", eyes)
                 crop_img = img[y-99:y+h+99, x-36:x+w+36]
                 if len(crop_img) != 0:
                     letters = string.ascii_lowercase
@@ -61,7 +62,7 @@ def detect_faces():
                     status = cv2.imwrite(file_path, crop_img)
                     print("[INFO] Image written to filesystem: ", status)
                     time.sleep(2)
-
+                
         except Exception as e:
             print(f"Error: {str(e)}")
 

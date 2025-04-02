@@ -19,9 +19,9 @@ if not os.path.exists(OUTPUT_FOLDER):
     os.makedirs(OUTPUT_FOLDER, mode=0o777, exist_ok=False)
 
 
-def upload(file):
+def upload(filepath):
     # print("HOST", socket.gethostname())
-    print('file',file)
+    print('file',filepath)
     headers = {
         'Content-Location': socket.gethostname(),
         'Timestamp': str(time.time()),
@@ -31,7 +31,7 @@ def upload(file):
 
     # logging.info('Sending file... %s' % file_path)
     print("Destination", GAE_URL)
-    with open(file,'rb') as fp:
+    with open(filepath,'rb') as fp:
         file_dict = {'file': (f, fp, 'multipart/form-data')}
         response = requests.post(GAE_URL, files=file_dict, headers=headers)
         fp.close()
@@ -39,10 +39,11 @@ def upload(file):
         print('STATUS %s' % response.status_code)
         # print('RESULT %s' % response.json()['message'])
 
-        if response.status_code in [200, 201] and response.json()['message'] == 'ok':
+        if response.status_code in [200, 201]:
+            print(response.json()['message'])
             del headers
             del response
-            del file_path                        
+            del filepath                        
             time.sleep(2)
             return True
         elif response.status_code == 502:
