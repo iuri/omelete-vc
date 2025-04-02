@@ -119,7 +119,7 @@ def get_attributes(input_file_path, crop_img_p="f"):
             del response
             del input_file_path                        
             time.sleep(2)
-            return 'ok'
+            return True
         except ValueError:  # If response is not JSON, fallback to raw text
             return {"message": response.text}
     else:
@@ -163,7 +163,7 @@ if __name__ == '__main__':
             if os.path.splitext(file_path)[1].lower() in ('.jpg', '.jpeg', '.png'):
                 if os.path.isfile(file_path):
                     r = get_attributes(file_path, 'f')
-                    if  r == 'ok':
+                    if  r == True:
                         os.rename(file_path, os.path.join(PROCESSED_FOLDER,f))
                     else:
                         print('ERROR',r)

@@ -42,7 +42,7 @@ def detect_faces():
 
         # print("[INFO] Found {0} Faces!".format(len(faces)))
         for (x, y, w, h) in faces:
-            # cv2.rectangle(img, (x, y), (x+w, y+h), (255,0, 0), 2)
+            cv2.rectangle(img, (x, y), (x+w, y+h), (255,0, 0), 2)
             roi_gray = gray[y:y+h, x:x+w]
             roi_color = img[y:y+h, x:x+w]
 
@@ -52,7 +52,7 @@ def detect_faces():
                 # cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0), 2)
 
             # if len(eyes) != 0:
-            # print("EYES", eyes)
+                #print("EYES", eyes)
             crop_img = img[y-99:y+h+99, x-36:x+w+36]
             if len(crop_img) != 0:
                 letters = string.ascii_lowercase

@@ -39,7 +39,7 @@ def upload(file):
         print('STATUS %s' % response.status_code)
         # print('RESULT %s' % response.json()['message'])
 
-        if response.status_code == 200 and response.json()['message'] == 'ok':
+        if response.status_code in [200, 201] and response.json()['message'] == 'ok':
             del headers
             del response
             del file_path                        
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         for f in os.listdir(INPUT_FOLDER):
             print('file: ', f)
             if not check_and_delete_json(os.path.join(INPUT_FOLDER,f)):
-                if upload(os.path.join(INPUT_FOLDER, f)):
+                if upload(os.path.join(INPUT_FOLDER, f)) == True:
                     os.rename(os.path.join(INPUT_FOLDER, f), os.path.join(OUTPUT_FOLDER, f))
             
                     
