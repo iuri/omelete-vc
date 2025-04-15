@@ -1,3 +1,4 @@
 requests
 python-dotenv
+facenet-pytorch
 pillow

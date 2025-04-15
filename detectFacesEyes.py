@@ -6,7 +6,6 @@ import datetime
 from dotenv import load_dotenv
 import time
 
-load_dotenv()
 
 # upperbodyCascade = cv2.CascadeClassifier('haarcascades/haarcascade_upperbody.xml')
 
@@ -17,6 +16,7 @@ faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_defaul
 # eyeCascade = cv2.CascadeClassifier('haarcascades/haarcascade_eye.xml')
 # eyeCascade = cv2.CascadeClassifier('haarcascades/haarcascade_eye_tree_eyeglasses.xml')
 
+load_dotenv()
 CAMERA_URL = os.environ.get("CAMERA_URL")
 
 # video_capture = cv2.VideoCapture(0)
