@@ -18,12 +18,11 @@ faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_defaul
 
 load_dotenv()
 CAMERA_URL = os.environ.get("CAMERA_URL")
-
-# video_capture = cv2.VideoCapture(0)
 video_capture = cv2.VideoCapture(CAMERA_URL)
+# video_capture = cv2.VideoCapture(0)
 
-# cv2.namedWindow("Window", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow('Window', 400, 400)
+cv2.namedWindow("Window", cv2.WINDOW_NORMAL)
+cv2.resizeWindow('Window', 400, 400)
 
 IMG_FOLDER = './images'
 if not os.path.exists(IMG_FOLDER):
@@ -34,13 +33,12 @@ if not os.path.exists(IMG_FOLDER):
 def detect_faces():
     while True:
         ret, img = video_capture.read()
-
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
+    
         # bodies = upperbodyCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
         faces = faceCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
         # faces = faceCascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
+        
         # print("[INFO] Found {0} Faces!".format(len(faces)))
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x+w, y+h), (255,0, 0), 2)
@@ -61,12 +59,20 @@ def detect_faces():
                 status = cv2.imwrite(file_path, crop_img)
                 print("[INFO] Image written to filesystem: ", status)
                 time.sleep(2)
-                        
-        
+
+        cv2.imshow("Window", img)
+        #This breaks on 'q' key
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
     video_capture.release()
     cv2.destroyAllWindows()
     return
+# try:
+# except Exception as e:
+#     print(f"Error: {str(e)}")
+
+            
 
 if __name__ == '__main__':
-    detect_faces()
-    
+    detect_faces()         
+            

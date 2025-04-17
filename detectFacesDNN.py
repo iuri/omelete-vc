@@ -1,11 +1,17 @@
 import cv2
 import numpy as np
+from dotenv import load_dotenv
+import random, string
+import socket
+import datetime
+import time
+import os
 
 load_dotenv()
 
 # Load pre-trained DNN face detector model from disk
-model_file = "res10_300x300_ssd_iter_140000.caffemodel"
-config_file = "deploy.prototxt.txt"
+model_file = "./res10_300x300_ssd_iter_140000.caffemodel"
+config_file = "./deploy.proto.txt"
 
 net = cv2.dnn.readNetFromCaffe(config_file, model_file)
 
@@ -64,10 +70,10 @@ def detect_faces():
                     print("[INFO] Image written to filesystem: ", status)
                     time.sleep(2)
 
-                cv2.imshow("DNN Face Detection", frame)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
+        cv2.imshow("DNN Face Detection", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
                 
-        cap.release()
-        cv2.destroyAllWindows()
-                
+    cap.release()
+    cv2.destroyAllWindows()
+    return     
