@@ -17,14 +17,19 @@ net = cv2.dnn.readNetFromCaffe(config_file, model_file)
 
 CAMERA_URL = os.environ.get("CAMERA_URL")
 
+os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
+
 # Open Cam or Video
-cap = cv2.VideoCapture(CAMERA_URL)
+cap = cv2.VideoCapture(0)
 
 IMG_FOLDER = './images'
 if not os.path.exists(IMG_FOLDER):
     os.umask(0)
     os.makedirs(IMG_FOLDER, mode=0o777, exist_ok=False)
 
+
+# cv2.namedWindow("Window", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow('Window', 300, 300)
 
 def detect_faces():
     while True:
@@ -60,7 +65,8 @@ def detect_faces():
                             cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2)
 
 
-                crop_img = frame[y-99:y+h+99, x-36:x+w+36]
+                # crop_img = frame[y1-99:y1+h+99, x1-36:x1+w+36]
+                crop_img = frame[y1-15:y2+15, x1-15:x2+15]
                 if len(crop_img) != 0:
                     letters = string.ascii_lowercase
                     result_str = ''.join(random.choice(letters) for i in range(12))
@@ -70,10 +76,15 @@ def detect_faces():
                     print("[INFO] Image written to filesystem: ", status)
                     time.sleep(2)
 
-        cv2.imshow("DNN Face Detection", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        # cv2.imshow("DNN Face Detection", frame)
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #    break
                 
     cap.release()
     cv2.destroyAllWindows()
     return     
+
+
+
+if __name__ == '__main__':
+    detect_faces()
