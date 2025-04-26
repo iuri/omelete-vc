@@ -16,19 +16,29 @@ LUNA_AUTH_TOKEN = os.environ.get("LUNA_AUTH_TOKEN")
 
 APPENGINE_URL = os.environ.get("APP_ENGINE_URL")
 
+PUBLIC_LIST = os.environ.get("PUBLIC_LIST")
+PERSON_LIST = os.environ.get("PERSON_LIST")
 
-INPUT_FOLDER = 'images'
+INPUT_FOLDER = './images'
+if not os.path.exists(INPUT_FOLDER):
+    os.umask(0)
+    os.makedirs(INPUT_FOLDER, mode=0o777, exist_ok=False)
 os.chdir(".")
 
-TMP_FOLDER= "tmp"
+TMP_FOLDER= "./tmp"
 if not os.path.exists(TMP_FOLDER):
     os.umask(0)
     os.makedirs(TMP_FOLDER, mode=0o777, exist_ok=False)
   
-OUTPUT_FOLDER = 'json'
+OUTPUT_FOLDER = './json'
 if not os.path.exists(OUTPUT_FOLDER):
     os.umask(0)
     os.makedirs(OUTPUT_FOLDER, mode=0o777, exist_ok=False)
+
+PROCESSED_FOLDER = './processed'
+if not os.path.exists(PROCESSED_FOLDER):
+    os.umask(0)
+    os.makedirs(PROCESSED_FOLDER, mode=0o777, exist_ok=False)
 
 
 def delete_file(file_path):
@@ -65,7 +75,50 @@ def resize_and_pad_image(input_path, output_path, size=(250, 250)):
         logging.warning(f"Error resizing and padding image: {e}")
         return None
 
+def add_descriptor_to_list(descriptor_id, list_id):
+    # Set request headers
+    headers = {
+        "X-Auth-Token": LUNA_AUTH_TOKEN,
+    }
 
+    # Construct API request URL
+    params = {
+        "list_id": list_id,
+        "do": "attach"
+    }
+    
+    response = requests.patch(f"{LUNA_API_URL}/4/storage/descriptors/{descriptor_id}/linked_lists", headers=headers, params=params)
+    # Check if the request was successful
+    if response.status_code in [200, 201, 204]:
+        return True
+    return 
+
+
+def face_match(descriptor_id, list_id):
+    # Set request headers
+    headers = {
+        "X-Auth-Token": LUNA_AUTH_TOKEN,
+        "Content-Type": "image/jpeg"
+    }
+
+    # Construct API request URL
+    params = {
+        "list_id": list_id,
+        "descriptor_id": descriptor_id
+    }
+
+    
+    response = requests.post(f"{LUNA_API_URL}/4/matching/match", headers=headers, params=params)
+    # Check if the request was successful
+    if response.status_code in [200, 201]:
+        json_data = response.json()
+        if float(json_data['candidates'][0]['similarity']) > float(0.91):
+            print(f"FOUND MATCH in {PUBLIC_LIST}")
+            return json_data['candidates'][0]['id']
+        else:
+            add_descriptor_to_list(descriptor_id, list_id)
+            print('face has been added to list!!')
+    return
 
 def get_attributes(input_file_path, crop_img_p="f"):
     """Handles image processing and sends the request to Luna API"""
@@ -102,20 +155,24 @@ def get_attributes(input_file_path, crop_img_p="f"):
     with open(output_file_path, "rb") as img_file:
         img_binary = img_file.read()
     
-    response = requests.post(LUNA_API_URL, headers=headers, params=params, data=img_binary)
+    response = requests.post(f"{LUNA_API_URL}/4/storage/descriptors", headers=headers, params=params, data=img_binary)
     
         # Check if the request was successful
     if response.status_code in [200, 201]:  
         try:
-            response_data = response.json()  # Try to parse JSON response
+            attribs_json = response.json()  # Try to parse JSON response
+            save_json_with_metadata(attribs_json, input_file_path.split("/")[2])
+
             del headers
             del response
             del input_file_path                        
             time.sleep(2)
-            return response_data
+            return True
         except ValueError:  # If response is not JSON, fallback to raw text
             return {"message": response.text}
     else:
+        print('Status', response.status_code)
+        delete_file(input_file_path)
         return {
             "error": "Luna API request failed",
             "status": response.status_code,
@@ -124,7 +181,7 @@ def get_attributes(input_file_path, crop_img_p="f"):
 
 
 
-def save_json_with_metadata(atribs, filename):
+def save_json_with_metadata(attribs, filename):
     """Enhance JSON with metadata and save to a file."""
     try:
         # print('file', filename)
@@ -132,14 +189,19 @@ def save_json_with_metadata(atribs, filename):
         # print(creation_date, host, name)
   
         # Add metadata fields
-        atribs["creation_date"] = creation_date  # Timestamp
-        atribs["host"] = hostname  # Machine hostname
-        atribs["filename"] = filename  # Original image filename
+        attribs["creation_date"] = creation_date  # Timestamp
+        attribs["host"] = hostname  # Machine hostname
+        attribs["filename"] = filename  # Original image filename
 
+
+        parent_id = face_match(attribs['faces'][0]['id'], PUBLIC_LIST)
+        if parent_id != '':
+            attribs['parent_id'] = parent_id            
+        
         # Save to a file
         output_file = f"{os.path.join(OUTPUT_FOLDER, name.split('.')[0] + '_' + datetime.datetime.now().isoformat() + '.json')}"
         with open(output_file, "w", encoding="utf-8") as f:
-            json.dump(atribs, f, indent=4)
+            json.dump(attribs, f, indent=4)
 
         print(f"JSON saved successfully to {output_file}")
         return 
@@ -153,7 +215,9 @@ if __name__ == '__main__':
             file_path = INPUT_FOLDER + '/' + f
             if os.path.splitext(file_path)[1].lower() in ('.jpg', '.jpeg', '.png'):
                 if os.path.isfile(file_path):
-                    attribs = get_attributes(file_path, 'f')
-                    save_json_with_metadata(attribs, file_path.split("/")[2])
-                    delete_file(file_path)
-       
+                    r = get_attributes(file_path, 'f')
+                    if  r == True:
+                        os.rename(file_path, os.path.join(PROCESSED_FOLDER,f))
+                    else:
+                        print('ERROR',r)
+                        
