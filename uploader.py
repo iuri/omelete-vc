@@ -33,7 +33,7 @@ def upload(filepath):
     print("Destination", GAE_URL)
     with open(filepath,'rb') as fp:
         file_dict = {'file': (f, fp, 'multipart/form-data')}
-        response = requests.post(GAE_URL, files=file_dict, headers=headers)
+        response = requests.post(f"{GAE_URL}/upload", files=file_dict, headers=headers)
         fp.close()
         # logging.info('STATUS %s' % response.status_code)
         print('STATUS %s' % response.status_code)

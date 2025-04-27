@@ -18,8 +18,8 @@ faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_defaul
 
 load_dotenv()
 CAMERA_URL = os.environ.get("CAMERA_URL")
-video_capture = cv2.VideoCapture(CAMERA_URL)
-# video_capture = cv2.VideoCapture(0)
+# video_capture = cv2.VideoCapture(CAMERA_URL)
+video_capture = cv2.VideoCapture(0)
 
 cv2.namedWindow("Window", cv2.WINDOW_NORMAL)
 cv2.resizeWindow('Window', 400, 400)

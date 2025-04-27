@@ -20,6 +20,7 @@ CAMERA_URL = os.environ.get("CAMERA_URL")
 os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
 
 # Open Cam or Video
+# cap = cv2.VideoCapture(CAMERA_URL)
 cap = cv2.VideoCapture(0)
 
 IMG_FOLDER = './images'
@@ -28,8 +29,8 @@ if not os.path.exists(IMG_FOLDER):
     os.makedirs(IMG_FOLDER, mode=0o777, exist_ok=False)
 
 
-# cv2.namedWindow("Window", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow('Window', 300, 300)
+cv2.namedWindow("Window", cv2.WINDOW_NORMAL)
+cv2.resizeWindow('Window', 300, 300)
 
 def detect_faces():
     while True:
@@ -76,9 +77,9 @@ def detect_faces():
                     print("[INFO] Image written to filesystem: ", status)
                     time.sleep(2)
 
-        # cv2.imshow("DNN Face Detection", frame)
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #    break
+        cv2.imshow("DNN Face Detection", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
                 
     cap.release()
     cv2.destroyAllWindows()
