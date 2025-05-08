@@ -20,7 +20,8 @@ CAMERA_URL = os.environ.get("CAMERA_URL")
 os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
 
 # Open Cam or Video
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(CAMERA_URL)
+# cap = cv2.VideoCapture(0)
 
 IMG_FOLDER = './images'
 if not os.path.exists(IMG_FOLDER):
@@ -30,6 +31,27 @@ if not os.path.exists(IMG_FOLDER):
 
 # cv2.namedWindow("Window", cv2.WINDOW_NORMAL)
 # cv2.resizeWindow('Window', 300, 300)
+
+
+
+
+# Resize to fixed width or height, maintaining aspect ratio
+def resize(image, width=None, height=None, inter=cv2.INTER_CUBIC):
+    (h, w) = image.shape[:2]
+    
+    if width is None and height is None:
+        return image
+    
+    if width is not None:
+        r = width / float(w)
+        dim = (width, int(h * r))
+    else:
+        r = height / float(h)
+        dim = (int(w * r), height)
+
+    resized = cv2.resize(image, dim, interpolation=inter)
+    return resized
+
 
 def detect_faces():
     while True:
@@ -66,7 +88,8 @@ def detect_faces():
 
 
                 # crop_img = frame[y1-99:y1+h+99, x1-36:x1+w+36]
-                crop_img = frame[y1-15:y2+15, x1-15:x2+15]
+                crop_img = resize(frame[y1-3:y2+3, x1-3:x2+3], width=250)
+                
                 if len(crop_img) != 0:
                     letters = string.ascii_lowercase
                     result_str = ''.join(random.choice(letters) for i in range(12))
@@ -77,8 +100,8 @@ def detect_faces():
                     time.sleep(2)
 
         # cv2.imshow("DNN Face Detection", frame)
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #    break
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
                 
     cap.release()
     cv2.destroyAllWindows()
