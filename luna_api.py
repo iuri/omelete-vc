@@ -1,7 +1,8 @@
 import os
+import ast
 from dotenv import load_dotenv
 
-from utils import send_request_with_retries 
+from utils import send_request_with_retries, delete_file
 
 load_dotenv()
 
@@ -144,13 +145,13 @@ def get_attributes(input_file_path, hostname, crop_img_p=0):
                 "details", response.text
             )
             return
-    else:
-
-        # delete_file(input_file_path)
+    elif response.status_code in [500]:        
+        if ast.literal_eval(response.text)['detail'] == "No faces found. Detail: No faces found.":
+            delete_file(input_file_path)
         print(
             "error", "Luna API request failed",
             "status", response.status_code,
             "details", response.text
         )
-        return
+    return
 

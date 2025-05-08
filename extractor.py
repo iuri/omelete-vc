@@ -117,7 +117,7 @@ def main():
                                 print("PERSON", json_data['person_id'])
                                 
                                 send_email(json_filename)
-                                exit()
+                                
                             os.rename(file_path, os.path.join(PROCESSED_FOLDER, f))
 
                                 
