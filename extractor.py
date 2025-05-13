@@ -1,14 +1,11 @@
 import os, requests, time, socket, datetime
-import logging
 import json
 from dotenv import load_dotenv
-
-
 from luna_api import get_attributes, face_match, person_match
-from utils import delete_file, resize_and_pad_image
 
 
-GAE_URL = os.environ.get("GAE_URL")
+load_dotenv()
+GAE_URL = os.getenv("GAE_URL")
 
 INPUT_FOLDER = './images'
 if not os.path.exists(INPUT_FOLDER):
@@ -29,10 +26,10 @@ if not os.path.exists(PROCESSED_FOLDER):
 
 
 
-PUBLIC_LIST = os.environ.get("PUBLIC_LIST")
+PUBLIC_LIST = os.getenv("PUBLIC_LIST")
 if not PUBLIC_LIST:
     print("PUBLIC_LIST has not been assigned")
-PERSON_LIST = os.environ.get("PERSON_LIST")
+PERSON_LIST = os.getenv("PERSON_LIST")
 if not PERSON_LIST:
     print("PERSON_LIST has not been assigned")
 
@@ -45,7 +42,7 @@ def send_email1(filepath):
     headers = {
         'Content-Location': socket.gethostname(),
         'Timestamp': str(time.time()),
-        'Authorization': os.environ.get('AUTH_TOKEN')
+        'Authorization': os.getenv('AUTH_TOKEN')
         
     }
 
@@ -78,7 +75,7 @@ def send_email(json_data):
     headers = {
         "Content-Location": socket.gethostname(),
         "Timestamp": str(time.time()),
-        "Authorization": os.environ.get('AUTH_TOKEN'),
+        "Authorization": os.getenv('AUTH_TOKEN'),
         "Content-Type": "application/json"
     }
 
@@ -128,9 +125,7 @@ def save_json_with_metadata(json_data, creation_date, hostname, filename):
 
 
 
-def main():
-    load_dotenv()
-    
+def main():    
     while 1:
         for f in os.listdir(INPUT_FOLDER):
             file_path = INPUT_FOLDER + '/' + f

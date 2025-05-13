@@ -15,7 +15,7 @@ config_file = "./deploy.proto.txt"
 
 net = cv2.dnn.readNetFromCaffe(config_file, model_file)
 
-CAMERA_URL = os.environ.get("CAMERA_URL")
+CAMERA_URL = os.getenv("CAMERA_URL")
 
 os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
 

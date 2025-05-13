@@ -3,7 +3,7 @@ import cv2
 import sys, random, string, time
 import os, os.path
 import logging
-import config
+
 
 # Uncomonent before deploy it
 # logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filename='/var/log/detectfaces.log',level=logging.INFO)
@@ -13,7 +13,7 @@ bodyCascade = cv2.CascadeClassifier('./haarcascade/haarcascade_fullbody.xml')
 upperBodyCascade = cv2.CascadeClassifier('./haarcascade/haarcascade_upperbody.xml')
 
 # video_capture = cv2.VideoCapture(0)
-video_capture = cv2.VideoCapture(config.camera_url)
+video_capture = cv2.VideoCapture(CAMERA_URL)
 
 cv2.namedWindow("Window", cv2.WINDOW_NORMAL)
 cv2.resizeWindow('Window', 400, 400)

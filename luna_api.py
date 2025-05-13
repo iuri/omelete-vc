@@ -7,10 +7,11 @@ from utils import send_request_with_retries, delete_file, resize_and_pad_image
 load_dotenv()
 
 # Configuration variables
-LUNA_API_URL = os.environ.get("LUNA_API_URL")
-LUNA_AUTH_TOKEN = os.environ.get("LUNA_AUTH_TOKEN")
+# LUNA_API_URL = os.getenv("LUNA_API_URL")
+LUNA_API_URL = 'http://luna.iurix.com:5000'
+LUNA_AUTH_TOKEN = os.getenv("LUNA_AUTH_TOKEN")
 
-
+print(f"LUNA_API_URL: {repr(LUNA_API_URL)}")
 TMP_FOLDER= "./tmp"
 if not os.path.exists(TMP_FOLDER):
     os.umask(0)
@@ -128,6 +129,9 @@ def get_attributes(input_file_path, hostname, crop_img_p=0):
     with open(output_file_path, "rb") as img_file:
         img_binary = img_file.read()
     
+
+    # print("payload", img_binary, "headers", headers, "params", params)
+    # print(LUNA_API_URL)
     # response = requests.post(f"{LUNA_API_URL}/4/storage/descriptors", headers=headers, params=params, data=img_binary)
     response = send_request_with_retries(f"{LUNA_API_URL}/4/storage/descriptors", payload=img_binary, headers=headers, params=params)
     # Check if the request was successful
