@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-GAE_URL = os.environ.get("GAE_URL")
+GAE_URL = os.getenv("GAE_URL")
 
 INPUT_FOLDER = './json'
 if not os.path.exists(INPUT_FOLDER):
@@ -25,7 +25,7 @@ def upload(filepath):
     headers = {
         'Content-Location': socket.gethostname(),
         'Timestamp': str(time.time()),
-        'Authorization': os.environ.get('AUTH_TOKEN')
+        'Authorization': os.getenv('AUTH_TOKEN')
         
     }
 
