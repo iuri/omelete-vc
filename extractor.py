@@ -30,12 +30,16 @@ if not os.path.exists(PROCESSED_FOLDER):
 
 
 PUBLIC_LIST = os.environ.get("PUBLIC_LIST")
+if not PUBLIC_LIST:
+    print("PUBLIC_LIST has not been assigned")
 PERSON_LIST = os.environ.get("PERSON_LIST")
+if not PERSON_LIST:
+    print("PERSON_LIST has not been assigned")
 
 
     
 
-def send_email(filepath):
+def send_email1(filepath):
     # print("HOST", socket.gethostname())
     print('file',filepath)
     headers = {
@@ -64,6 +68,35 @@ def send_email(filepath):
             return True
         elif response.status_code == 502:
             time.sleep(500)        
+        
+    return response.status_code
+
+
+def send_email(json_data):
+    # print("HOST", socket.gethostname())
+    print('data', json_data)
+    headers = {
+        "Content-Location": socket.gethostname(),
+        "Timestamp": str(time.time()),
+        "Authorization": os.environ.get('AUTH_TOKEN'),
+        "Content-Type": "application/json"
+    }
+
+    # logging.info('Sending file... %s' % file_path)
+    print("Destination", GAE_URL)
+    response = requests.post(f"{GAE_URL}/email", headers=headers, data=json.dumps(json_data))
+
+    print('STATUS %s' % response.status_code)
+    # print('RESULT %s' % response.json()['message'])
+
+    if response.status_code in [200, 201]:
+        print(response.json()['message'])
+        del headers
+        del response
+        time.sleep(2)
+        return True
+    elif response.status_code == 502:
+        time.sleep(500)        
         
     return response.status_code
 
@@ -116,7 +149,7 @@ def main():
                             if json_data['person_id'] != None:
                                 print("PERSON", json_data['person_id'])
                                 
-                                send_email(json_filename)
+                                send_email(json_data)
                                 
                             os.rename(file_path, os.path.join(PROCESSED_FOLDER, f))
 

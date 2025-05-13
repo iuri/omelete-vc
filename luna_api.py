@@ -2,7 +2,7 @@ import os
 import ast
 from dotenv import load_dotenv
 
-from utils import send_request_with_retries, delete_file
+from utils import send_request_with_retries, delete_file, resize_and_pad_image
 
 load_dotenv()
 
@@ -29,7 +29,7 @@ def add_descriptor_to_list(descriptor_id, list_id):
         "do": "attach"
     }
     
-    response = send_request_with_retries(f"{LUNA_API_URL}/4/matching/match", payload=None, headers=headers, params=params, method=patch)
+    response = send_request_with_retries(f"{LUNA_API_URL}/4/matching/match", payload=None, headers=headers, params=params, method="PATCH")
     # response = requests.patch(f"{LUNA_API_URL}/4/storage/descriptors/{descriptor_id}/linked_lists", headers=headers, params=params)
     # Check if the request was successful
     if response.status_code in [200, 201, 204]:
