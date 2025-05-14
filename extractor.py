@@ -144,7 +144,7 @@ def main():
                             if json_data['person_id'] != None:
                                 print("PERSON", json_data['person_id'])
                                 
-                                send_email(json_data)
+                                # send_email(json_data)
                                 
                             os.rename(file_path, os.path.join(PROCESSED_FOLDER, f))
 
