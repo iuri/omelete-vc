@@ -136,7 +136,7 @@ def photo_match(file_path, list_id, crop_img_p='0'):
                 print("NO MATCHES > 90% FOUND")
             del headers
             del response
-            del input_file_path
+            del file_path
             return None, None, None
         except ValueError:  # If response is not JSON, fallback to raw text
             print(
@@ -147,7 +147,7 @@ def photo_match(file_path, list_id, crop_img_p='0'):
             return
     elif response.status_code in [500]:        
         if ast.literal_eval(response.text)['detail'] == "No matches found. Detail: person is not in the list":
-            delete_file(input_file_path)
+            delete_file(file_path)
         print(
             "error", "Luna API request failed",
             "status", response.status_code,
