@@ -1,7 +1,7 @@
 import os, requests, time, socket, datetime
 import json
 from dotenv import load_dotenv
-from luna_api import get_attributes, face_match, person_match
+from luna_api import get_attributes, face_match, photo_match
 
 
 load_dotenv()
@@ -87,14 +87,14 @@ def send_email(json_data):
     # print('RESULT %s' % response.json()['message'])
 
     if response.status_code in [200, 201]:
-        print(response.json()['message'])
+        print(response.json()['status'])
         del headers
         del response
         time.sleep(2)
         return True
-    elif response.status_code == 502:
-        time.sleep(500)        
-        
+    elif response.status_code in [500, 501, 502]:
+        # time.sleep(500)        
+        print("ERROR: Email not sent!")
     return response.status_code
 
 
@@ -103,15 +103,16 @@ def send_email(json_data):
 
 
 
-def save_json_with_metadata(json_data, creation_date, hostname, filename):
+def save_json_with_metadata(json_data, file_path, creation_date, hostname, filename):
     """Enhance JSON with metadata and save to a file."""
   
     # Add metadata fields
     json_data["creation_date"] = creation_date  # Timestamp
     json_data["host"] = hostname  # Machine hostname
     json_data["filename"] = filename  # Original image filename
-    json_data['parent_face_id'] = face_match(json_data['faces'][0]['id'], PUBLIC_LIST)
-    json_data['person_id'] = person_match(json_data['faces'][0]['id'], PERSON_LIST)
+    json_data['faces'][0]['parent_face_id'] = face_match(json_data['faces'][0]['id'], PUBLIC_LIST)
+    # json_data['faces'][0]['person_id'] = descriptor_match(json_data['faces'][0]['id'], PERSON_LIST)
+    json_data['faces'][0]['person_id'], json_data['faces'][0]['email'], json_data['faces'][0]['name'] = photo_match(file_path, PERSON_LIST) 
 
     # Save to a file
     json_filename = f"{os.path.join(OUTPUT_FOLDER, filename.split('.')[0] + '_' + datetime.datetime.now().isoformat() + '.json')}"
@@ -140,15 +141,12 @@ def main():
                     
                     if json_data != None:
                         if "faces" in json_data:
-                            json_data, json_filename = save_json_with_metadata(json_data, creation_date, hostname, name)
-                            if json_data['person_id'] != None:
-                                print("PERSON", json_data['person_id'])
-                                
-                                # send_email(json_data)
+                            json_data, json_filename = save_json_with_metadata(json_data, file_path, creation_date, hostname, name)
+                            if json_data['faces'][0]['person_id'] != None:
+                                print("PERSON", json_data['faces'][0]['person_id'])                                
+                                send_email(json_data)
                                 
                             os.rename(file_path, os.path.join(PROCESSED_FOLDER, f))
-
-                                
     return
 
 if __name__ == '__main__':
