@@ -64,7 +64,7 @@ def face_match(descriptor_id, list_id):
         else:
             add_descriptor_to_list(descriptor_id, list_id)
             print('face has been added to list!!')
-    return
+    return None
 
 
 def descriptor_match(descriptor_id, list_id):
@@ -137,14 +137,13 @@ def photo_match(file_path, list_id, crop_img_p='0'):
             del headers
             del response
             del file_path
-            return None, None, None
         except ValueError:  # If response is not JSON, fallback to raw text
             print(
                 "error", "Luna API request failed",
                 "status", response.status_code,
                 "details", response.text
             )
-            return
+            
     elif response.status_code in [500]:        
         if ast.literal_eval(response.text)['detail'] == "No matches found. Detail: person is not in the list":
             delete_file(file_path)
@@ -153,7 +152,7 @@ def photo_match(file_path, list_id, crop_img_p='0'):
             "status", response.status_code,
             "details", response.text
         )
-    return
+    return None, None, None
 
 
 def get_attributes(input_file_path, hostname, crop_img_p=0):
