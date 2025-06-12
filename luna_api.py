@@ -57,10 +57,10 @@ def face_match(descriptor_id, list_id):
     # Check if the request was successful
     if response.status_code in [200, 201]:
         json_data = response.json()
-        print(json_data['candidates'])
-        if json_data['candidates'] != [] and float(json_data['candidates'][0]['similarity']) > float(0.91):
-            print(f"FOUND MATCH in {list_id}")
-            return json_data['candidates'][0]['id']
+        if 'candidates' in json_data and json_data['candidates']:
+            if float(json_data['candidates'][0]['similarity']) > float(0.91):
+                print(f"FOUND MATCH in {list_id}")
+                return json_data['candidates'][0]['id']
         else:
             add_descriptor_to_list(descriptor_id, list_id)
             print('face has been added to list!!')
@@ -87,9 +87,10 @@ def descriptor_match(descriptor_id, list_id):
     # Check if the request was successful
     if response.status_code in [200, 201]:
         json_data = response.json()
-        if float(json_data['candidates'][0]['similarity']) > float(0.91):
-            print(f"FOUND DESCRIPTOR MATCH in {list_id}")
-            return json_data['candidates'][0]['id']
+        if 'candidates' in json_data and json_data['candidates']:    
+            if float(json_data['candidates'][0]['similarity']) > float(0.91):
+                print(f"FOUND DESCRIPTOR MATCH in {list_id}")
+                return json_data['candidates'][0]['id']
         else:
             print("NO MATCHES")
 
@@ -129,9 +130,10 @@ def photo_match(file_path, list_id, crop_img_p='0'):
     if response.status_code in [200, 201]:
         try:
             json_data = response.json()
-            if json_data['candidates'] != [] and float(json_data['candidates'][0]['similarity']) > float(0.91):
-                print(f"FOUND MATCH in {list_id}")
-                return json_data['candidates'][0]['person_id'], json_data['candidates'][0]['user_data'], json_data['candidates'][0]['external_id']
+            if 'candidates' in json_data and json_data['candidates']:
+                if float(json_data['candidates'][0]['similarity']) > float(0.91):
+                    print(f"FOUND MATCH in {list_id}")
+                    return json_data['candidates'][0]['person_id'], json_data['candidates'][0]['user_data'], json_data['candidates'][0]['external_id']
             else:
                 print("NO MATCHES > 90% FOUND")
             del headers
