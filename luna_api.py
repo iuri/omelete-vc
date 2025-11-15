@@ -7,8 +7,7 @@ from utils import send_request_with_retries, delete_file, resize_and_pad_image
 load_dotenv()
 
 # Configuration variables
-# LUNA_API_URL = os.getenv("LUNA_API_URL")
-LUNA_API_URL = 'http://luna.iurix.com:5000'
+LUNA_API_URL = os.getenv("LUNA_API_URL")
 LUNA_AUTH_TOKEN = os.getenv("LUNA_AUTH_TOKEN")
 
 print(f"LUNA_API_URL: {repr(LUNA_API_URL)}")
