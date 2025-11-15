@@ -19,6 +19,7 @@ if not os.path.exists(TMP_FOLDER):
 
 
 def add_descriptor_to_list(descriptor_id, list_id):
+    print("Adding descriptor to list")
     # Set request headers
     headers = {
         "X-Auth-Token": LUNA_AUTH_TOKEN,
@@ -30,7 +31,7 @@ def add_descriptor_to_list(descriptor_id, list_id):
         "do": "attach"
     }
     
-    response = send_request_with_retries(f"{LUNA_API_URL}/4/matching/match", payload=None, headers=headers, params=params, method="PATCH")
+    response = send_request_with_retries(f"{LUNA_API_URL}/4/storage/descriptors/{descriptor_id}/linked_lists", payload=None, headers=headers, params=params, method="PATCH")
     # response = requests.patch(f"{LUNA_API_URL}/4/storage/descriptors/{descriptor_id}/linked_lists", headers=headers, params=params)
     # Check if the request was successful
     if response.status_code in [200, 201, 204]:
@@ -39,6 +40,7 @@ def add_descriptor_to_list(descriptor_id, list_id):
 
 
 def face_match(descriptor_id, list_id):
+    print("Running face match")
     # Set request headers
     headers = {
         "X-Auth-Token": LUNA_AUTH_TOKEN,
@@ -99,6 +101,7 @@ def descriptor_match(descriptor_id, list_id):
 
 def photo_match(file_path, list_id, crop_img_p='0'):
     """Handles image processing and sends the request to Luna API"""
+    print("Running photo match")
     print(file_path)
     if not os.path.exists(file_path):
         return {"error": "Image file not found"}

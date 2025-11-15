@@ -44,6 +44,7 @@ def resize_and_pad_image(input_path, output_path, size=(250, 250)):
 
 
 def send_request_with_retries(url, payload=None, headers=None, params=None, method="POST", retry_interval=5):
+    print("METHOD: ", method)
     while True:
         try:
             if method=="PATCH":

@@ -123,6 +123,38 @@ def save_json_with_metadata(json_data, file_path, creation_date, hostname, filen
     return json_data, json_filename
 
 
+def upload(filepath):
+    # print("HOST", socket.gethostname())
+    print('file',filepath)
+    headers = {
+        'Content-Location': socket.gethostname(),
+        'Timestamp': str(time.time()),
+        'Authorization': os.getenv('AUTH_TOKEN')
+        
+    }
+
+    # logging.info('Sending file... %s' % file_path)
+    print("Destination", GAE_URL)
+    with open(filepath,'rb') as fp:
+        file_dict = {'file': (filepath, fp, 'multipart/form-data')}
+        response = requests.post(f"{GAE_URL}/upload-image", files=file_dict, headers=headers)
+        fp.close()
+        # logging.info('STATUS %s' % response.status_code)
+        print('STATUS %s' % response.status_code)
+        # print('RESULT %s' % response.json()['message'])
+
+        if response.status_code in [200, 201]:
+            print(response.json()['message'])
+            del headers
+            del response
+            # del filepath                        
+            time.sleep(2)
+            return True
+        elif response.status_code == 502:
+            time.sleep(500)
+        
+    return response.status_code
+
 
 
 
@@ -135,13 +167,16 @@ def main():
                     print('file', file_path)
                     
                     creation_date, hostname, name = file_path.split("/")[2].split('_')
-                    print(creation_date, hostname, name)
+                    # print(creation_date, hostname, name)
                     json_data = get_attributes(file_path, hostname, 'f')
-                    print(json_data)
+                    # print(json_data)
                     
                     if json_data != None:
                         if "faces" in json_data:
+                            # extract metadata and save JSON
                             json_data, json_filename = save_json_with_metadata(json_data, file_path, creation_date, hostname, name)
+                            # upload image 
+                            upload(file_path)
                             if json_data['faces'][0]['person_id'] != None:
                                 print("PERSON", json_data['faces'][0]['person_id'])                                
                                 send_email(json_data)
