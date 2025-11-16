@@ -176,7 +176,10 @@ def main():
                             # extract metadata and save JSON
                             json_data, json_filename = save_json_with_metadata(json_data, file_path, creation_date, hostname, name)
                             # upload image 
-                            upload(file_path)
+                            if bool(os.getenv("UPLOAD_IMAGE_P")):
+                                print("Uploading image...")
+                                upload(file_path)
+   
                             if json_data['faces'][0]['person_id'] != None:
                                 print("PERSON", json_data['faces'][0]['person_id'])                                
                                 send_email(json_data)
